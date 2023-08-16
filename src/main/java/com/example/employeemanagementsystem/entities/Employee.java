@@ -1,47 +1,51 @@
 package com.example.employeemanagementsystem.entities;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "COM_EMPLOYEEMGMT_EMPLOYEE_MST")
-@Getter
-@Setter
+@Builder
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@DynamicInsert
-@DynamicUpdate
-public class Employee {
+@Setter
+@Getter
+@ToString
+public class Employee extends Auditable {
     @Id
     @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
+    @NotNull
     @Column(unique = true, name = "EMPLOYEE_CODE")
     private String uniqueEmployeeCode;
 
-    @Column(nullable = false, name = "FIRST_NAME")
+    @NotNull
+    @Column(name = "FIRST_NAME")
     private String firstName;
 
-    @Column(nullable = false, name = "LAST_NAME")
+    @NotNull
+    @Column(name = "LAST_NAME")
     private String lastName;
 
+    @NotNull
     @Email
-    @Column(nullable = false, name = "EMAIL_ID")
+    @Column(name = "EMAIL_ID")
     private String emailId;
 
+    @NotNull
     @Email
-    @Column(nullable = false, name = "ALTERNATE_EMAIL_ID")
+    @Column(name = "ALTERNATE_EMAIL_ID", nullable = false)
     private String alternativeEmailId;
 
     @Digits(
@@ -49,7 +53,8 @@ public class Employee {
             fraction = 0,
             message = "Mobile number is to be of 10 digits"
     )
-    @Column(nullable = false, name = "MOBILE_NUMBER")
+    @NotNull
+    @Column(name = "MOBILE_NUMBER")
     private String mobileNumber;
 
     @NotNull
@@ -57,5 +62,9 @@ public class Employee {
     @Column(name = "ACTIVE_STATUS")
     private String activeStatus;
 
-
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY,
+              cascade = CascadeType.ALL)
+    private Set<AttendanceEntity> attendances;
 }
+
+
